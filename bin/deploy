@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Application Name 
+APP_NAME='sweepon';
+
+# Server IP
+HOST='66.228.36.185';
+
+# Repo address
+REPO='git@github.com:morrillt/SweepStreet.git';
+
+# Current Time in seconds
+TIME="`date +%s`";
+
+# Where to deploy the code
+RELEASE_DIR="/var/www/${APP_NAME}-www";
+
+# User to deploy as
+DEPLOY_AS='root';
+
+# Set the base deploy command
+CMD_DEPLOY="`cat <<EOF
+mkdir -p ${RELEASE_DIR} &&
+mkdir -p ${RELEASE_DIR}/${TIME} &&
+cd ${RELEASE_DIR}/${TIME} &&
+git clone ${REPO} . &&
+ln -nfs ${RELEASE_DIR}/${TIME} ${RELEASE_DIR}/current
+EOF
+`"
+
+echo "Executing deployment";
+echo ${CMD_DEPLOY};
+ssh ${DEPLOY_AS}@${HOST} ${CMD_DEPLOY};
+echo "Deployed to ${RELEASE_DIR}/${TIME}";
